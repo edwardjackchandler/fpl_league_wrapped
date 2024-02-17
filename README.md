@@ -1,8 +1,12 @@
 # fpl_league_wrapped
 Application to pull data about a Fantasy Premier League's performance.
 
+# Initial Questions Answered 
+* Most points left on bench
+* Worst week
+* Biggest difference in points on a week from winner and loser
+
 # Ideas
-* Most benched points list
 * Worst transfer of the season
 * Most points left on bench
 * Worst week
@@ -13,3 +17,8 @@ Application to pull data about a Fantasy Premier League's performance.
 * Biggest transfer value loss/gain
 * Worst week while using wildcard
 * Most/Least amount of times captaining Haaland
+
+# Code ToDo
+1. Add more tests
+2. Add Streamlit
+3. Add URLs into tables so that it's easier to give a link to click through to the team
