@@ -62,10 +62,10 @@ def main():
         if load_button and league_id.isdigit():
             st.markdown("temp_league_id = 665568")
             # Initialize LeagueHistoryLoader
+            league_history_loader = LeagueHistoryLoader(int(league_id))
 
         elif load_button:
             st.error("Please enter a valid league ID.")
-        league_history_loader = LeagueHistoryLoader(int(league_id))
 
     # Load League Data
     df = league_history_loader.get_data()
