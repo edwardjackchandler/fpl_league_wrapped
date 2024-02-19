@@ -55,6 +55,7 @@ def main():
     dev = False
     if dev:
         league_id = 665568
+        league_history_loader = LeagueHistoryLoader(int(league_id))
     else:
         league_id = st.text_input("Enter league ID", "")
         load_button = st.button("Load Data")
@@ -64,7 +65,7 @@ def main():
 
         elif load_button:
             st.error("Please enter a valid league ID.")
-    league_history_loader = LeagueHistoryLoader(int(league_id))
+        league_history_loader = LeagueHistoryLoader(int(league_id))
 
     # Load League Data
     df = league_history_loader.get_data()
