@@ -89,6 +89,9 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     # Load League Data
     df = league_history_loader.get_data()
 
+    # Display the max game week
+    st.markdown(f"## Data Refreshed for GW {df['event'].max()}")
+
     # st.markdown("# Player Ranked Last Most Frequently")
     # st.markdown("This section displays the player who has been ranked last for each week throughout the season the most times.")
     # most_frequent_last_rank_df = get_most_frequent_last_rank(df)
@@ -97,14 +100,14 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     # player_name = most_frequent_last_rank_df.iloc[0]['player_name']
     # st.markdown(f"The player who has been ranked last the most times is **{player_name}**.")
 
-    st.markdown("# Points by Gameweek")
+    st.markdown("## Points by Gameweek")
     st.markdown(
         "This section displays the points gained by each player for each gameweek."
     )
     points_by_gameweek_df = get_points_by_gameweek(df)
     plot_total_points(points_by_gameweek_df)
 
-    st.markdown("# Total Points Left on Bench")
+    st.markdown("## Total Points Left on Bench")
     st.markdown(
         "This section displays the total points left on the bench by each player."
     )
@@ -112,7 +115,7 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     # st.write(total_bench_points_df)
     plot_total_bench_points(total_bench_points_df)
 
-    st.markdown("# Total Points vs Points Left on Bench")
+    st.markdown("## Total Points vs Points Left on Bench")
     st.markdown(
         "This section displays the total points and points left on the bench by each player."
     )
@@ -120,7 +123,7 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     # st.write(total_points_and_bench_points)
     plot_total_vs_bench_points(total_points_and_bench_points)
 
-    st.markdown("# Most Points Left on Bench in a Week")
+    st.markdown("## Most Points Left on Bench in a Week")
     st.markdown(
         "This section displays the most points left on the bench in a week by each player."
     )
@@ -128,7 +131,7 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     # st.write(week_bench_points_df)
     plot_week_bench_points(week_bench_points_df)
 
-    st.markdown("# Biggest Difference in Event Points")
+    st.markdown("## Biggest Difference in Event Points")
     st.markdown(
         "This section displays the biggest difference in event points between any two players."
     )
