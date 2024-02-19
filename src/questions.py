@@ -20,14 +20,14 @@ def get_total_points_left_on_bench(duckdb_df):
         SELECT 
             player_name, 
             entry_name, 
-            SUM(points_on_bench) AS total_points_on_bench
+            SUM(points_on_bench) AS bench_points
         FROM 
             duckdb_df
         GROUP BY 
             player_name, 
             entry_name
         ORDER BY 
-            total_points_on_bench DESC
+            bench_points DESC
     """
     ).to_df()
 
@@ -91,6 +91,7 @@ def get_biggest_difference(duckdb_df):
     """
     ).to_df()
 
+
 def get_points_by_gameweek(duckdb_df):
     """
     This function returns a DataFrame with the points gained by a specific player and entry by gameweek,
@@ -107,7 +108,9 @@ def get_points_by_gameweek(duckdb_df):
             duckdb_df
         ORDER BY 
             gameweek ASC
-    """).to_df()
+    """
+    ).to_df()
+
 
 def get_most_frequent_last_rank(duckdb_df):
     """
@@ -132,5 +135,25 @@ def get_most_frequent_last_rank(duckdb_df):
         ORDER BY 
             times_last_rank DESC
         LIMIT 1
+    """
+    ).to_df()
+
+
+def get_total_points_and_bench_points(duckdb_df):
+    """
+    This function returns a DataFrame with the total points and total points left on the bench for each player and team for the season.
+    """
+    return duckdb.query(
+        """
+        SELECT 
+            player_name, 
+            entry_name, 
+            SUM(points_on_bench) AS bench_points, 
+            SUM(event_points) AS total_points
+        FROM 
+            duckdb_df
+        GROUP BY 
+            player_name, 
+            entry_name
     """
     ).to_df()
