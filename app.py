@@ -56,10 +56,10 @@ def main():
     if dev:
         league_id = 665568
     else:
+        league_id = st.text_input("Enter league ID", "")
+        load_button = st.button("Load Data")
         if load_button and league_id.isdigit():
             st.markdown("temp_league_id = 665568")
-            league_id = st.text_input("Enter league ID", "")
-            load_button = st.button("Load Data")
             # Initialize LeagueHistoryLoader
 
         elif load_button:
