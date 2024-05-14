@@ -46,19 +46,6 @@ class FPLDataLoader:
         return self.format_data()
 
 
-def get_league_summary(self):
-    managers_pdf = self.get_league_entries_pdf()
-    entry_ids = managers_pdf["entry_id"].tolist()
-    manager_pick_details = []
-
-    for entry_id in entry_ids:
-        manager_pick_details.append(self.get_pick_details(entry_id))
-
-    manager_pick_details_pdf = pd.concat(manager_pick_details)
-
-    return manager_pick_details_pdf.merge(managers_pdf, on="entry_id")
-
-
 class StandingsLoader(FPLDataLoader):
 
     # Create a standings_schema_mapping attribute
@@ -140,7 +127,6 @@ class LeagueHistoryLoader:
         "entry_name": "entry_name",
     }
 
-
     def __init__(self, league_id):
         self.league_id = league_id
         self.standings = StandingsLoader(league_id)
@@ -175,4 +161,3 @@ class LeagueHistoryLoader:
 # df = league_history.get_df()
 # df = df.groupby("player_name").agg({"points_on_bench": "sum"}).sort_values(['points_on_bench'], ascending=False).reset_index()
 # print(df)
-

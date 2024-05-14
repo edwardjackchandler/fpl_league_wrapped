@@ -54,7 +54,7 @@ def plot_week_bench_points(df):
 
 def plot_total_vs_bench_points(df):
     # Create a new column that is the sum of total_points and bench_points
-    df['total_and_bench_points'] = df['total_points'] + df['bench_points']
+    df["total_and_bench_points"] = df["total_points"] + df["bench_points"]
 
     # Sort DataFrame by total_and_bench_points from greatest to least
     df = df.sort_values("total_and_bench_points", ascending=False)
@@ -91,14 +91,6 @@ def display_data(league_history_loader: LeagueHistoryLoader):
 
     # Display the max game week
     st.markdown(f"## Data Refreshed for GW {df['event'].max()}")
-
-    # st.markdown("# Player Ranked Last Most Frequently")
-    # st.markdown("This section displays the player who has been ranked last for each week throughout the season the most times.")
-    # most_frequent_last_rank_df = get_most_frequent_last_rank(df)
-    # st.write(most_frequent_last_rank_df)
-
-    # player_name = most_frequent_last_rank_df.iloc[0]['player_name']
-    # st.markdown(f"The player who has been ranked last the most times is **{player_name}**.")
 
     st.markdown("## Points by Gameweek")
     st.markdown(
