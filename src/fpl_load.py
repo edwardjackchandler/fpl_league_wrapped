@@ -48,9 +48,6 @@ class FPLDataLoader:
 
 class StandingsLoader(FPLDataLoader):
 
-    # Create a standings_schema_mapping attribute
-    # Using ['id', 'event_total', 'player_name', 'rank', 'last_rank', 'rank_sort', 'total', 'entry', 'entry_name']
-
     standings_schema_mapping = {
         "id": "id",
         "event_total": "event_total",
@@ -141,23 +138,3 @@ class LeagueHistoryLoader:
         # filter history_df to only include the keys in league_history_schema_mapping
         history_df = history_df.rename(columns=self.league_history_schema_mapping)
         return history_df
-
-
-# standings = StandingsLoader(665568)
-# print("standings")
-# print(standings.get_data().columns)
-# print(standings.get_data().head(2))
-
-# history = HistoryLoader(3110982)
-# print("history")
-# print(history.get_data().columns)
-# print(history.get_data().head(2))
-
-# league_history = LeagueHistoryLoader(665568)
-# print("league_history")
-# print(league_history.get_df().columns)
-
-# # Create a dataframe and group by the player_name and sum the bench points
-# df = league_history.get_df()
-# df = df.groupby("player_name").agg({"points_on_bench": "sum"}).sort_values(['points_on_bench'], ascending=False).reset_index()
-# print(df)

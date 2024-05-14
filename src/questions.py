@@ -4,12 +4,6 @@ import duckdb
 from typing import Dict
 
 
-class AIQuestion:
-    question_string: str
-    sql_answer: str
-    data_schema: Dict[str, type]
-
-
 def get_total_points_left_on_bench(duckdb_df):
     """
     This function returns a DataFrame with the total points left on the bench for each player and entry,
