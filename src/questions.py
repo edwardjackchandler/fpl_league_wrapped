@@ -143,7 +143,7 @@ def get_total_points_and_bench_points(duckdb_df):
             player_name, 
             entry_name, 
             SUM(points_on_bench) AS bench_points, 
-            SUM(event_points) AS total_points
+            SUM(event_points)AS total_points
         FROM 
             duckdb_df
         GROUP BY 
@@ -151,3 +151,119 @@ def get_total_points_and_bench_points(duckdb_df):
             entry_name
     """
     ).to_df()
+
+def get_player_best_rank_event(duckdb_df):
+    """
+    This function returns a DataFrame with the player_name, entry_name, best_rank, and the event on which that best_rank happened
+    """
+    return duckdb.query("""
+        WITH total_points AS (
+            SELECT 
+                event, 
+                event_points, 
+                entry_name, 
+                player_name,
+                SUM(event_points) OVER (PARTITION BY player_name, entry_name ORDER BY event) AS total_points
+            FROM
+                duckdb_df
+        ),
+        ranks AS (
+            SELECT 
+                event, 
+                event_points, 
+                entry_name, 
+                player_name,
+                total_points,
+                RANK() OVER (PARTITION BY event ORDER BY total_points DESC) as rank
+            FROM
+                total_points
+        ),
+        best_ranks AS (
+            SELECT 
+                player_name,
+                entry_name,
+                MIN(rank) as best_rank
+            FROM 
+                ranks
+            GROUP BY
+                player_name,
+                entry_name
+        )
+        SELECT 
+            br.player_name,
+            br.entry_name,
+            br.best_rank,
+            STRING_AGG(CAST(r.event AS VARCHAR), ', ' ORDER BY event) AS event_list
+        FROM
+            best_ranks br
+        JOIN 
+            ranks r
+        ON 
+            br.player_name = r.player_name AND 
+            br.entry_name = r.entry_name AND 
+            br.best_rank = r.rank
+        GROUP BY
+            br.player_name,
+            br.entry_name,
+            br.best_rank
+        ORDER BY 
+            br.entry_name
+    """).to_df()
+
+def get_player_worst_rank_event(duckdb_df):
+    """
+    This function returns a DataFrame with the player_name, entry_name, worst_rank, and the event on which that worst_rank happened
+    """
+    return duckdb.query("""
+        WITH total_points AS (
+            SELECT 
+                event, 
+                event_points, 
+                entry_name, 
+                player_name,
+                SUM(event_points) OVER (PARTITION BY player_name, entry_name ORDER BY event) AS total_points
+            FROM
+                duckdb_df
+        ),
+        ranks AS (
+            SELECT 
+                event, 
+                event_points, 
+                entry_name, 
+                player_name,
+                total_points,
+                RANK() OVER (PARTITION BY event ORDER BY total_points DESC) as rank
+            FROM
+                total_points
+        ),
+        worst_ranks AS (
+            SELECT 
+                player_name,
+                entry_name,
+                MAX(rank) as worst_rank
+            FROM 
+                ranks
+            GROUP BY
+                player_name,
+                entry_name
+        )
+        SELECT 
+            wr.player_name,
+            wr.entry_name,
+            wr.worst_rank,
+            STRING_AGG(CAST(r.event AS VARCHAR), ', ' ORDER BY event) AS event_list
+        FROM
+            worst_ranks wr
+        JOIN 
+            ranks r
+        ON 
+            wr.player_name = r.player_name AND 
+            wr.entry_name = r.entry_name AND 
+            wr.worst_rank = r.rank
+        GROUP BY
+            wr.player_name,
+            wr.entry_name,
+            wr.worst_rank
+        ORDER BY 
+            wr.player_name
+    """).to_df()

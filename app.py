@@ -8,6 +8,8 @@ from src.questions import (
     get_points_by_gameweek,
     get_most_frequent_last_rank,
     get_total_points_and_bench_points,
+    get_player_best_rank_event,
+    get_player_worst_rank_event
 )
 
 
@@ -73,7 +75,7 @@ def plot_total_vs_bench_points(df):
 def main():
     st.title("FPL League Wrapped")
 
-    # st.markdown("Feed The Pig Championship League ID: 665568")
+    st.markdown("Feed The Pig Championship League ID: 665568")
     league_id = st.text_input("Enter league ID", "")
     load_button = st.button("Load Data")
 
@@ -98,6 +100,21 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     )
     points_by_gameweek_df = get_points_by_gameweek(df)
     plot_total_points(points_by_gameweek_df)
+
+    st.markdown("## Player's Worst Rank")
+    st.markdown(
+        "This section displays a player's best rank across the whole season."
+    )
+    player_worst_rank = get_player_worst_rank_event(df)
+    # todo - Make sure dataframe displays properly
+    st.table(player_worst_rank)
+
+    st.markdown("## Player's Best Rank")
+    st.markdown(
+        "This section displays a player's best rank across the whole season."
+    )
+    player_best_rank = get_player_best_rank_event(df)
+    st.table(player_best_rank)
 
     st.markdown("## Total Points Left on Bench")
     st.markdown(
