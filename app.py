@@ -75,7 +75,7 @@ def plot_total_vs_bench_points(df):
 def main():
     st.title("FPL League Wrapped")
 
-    st.markdown("Feed The Pig Championship League ID: 665568")
+    # st.markdown("Feed The Pig Championship League ID: 665568")
     league_id = st.text_input("Enter league ID", "")
     load_button = st.button("Load Data")
 
