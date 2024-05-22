@@ -12,6 +12,34 @@ from src.questions import (
     get_player_worst_rank_event
 )
 
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import streamlit as st
+import bar_chart_race as bcr
+import base64
+
+@st.cache_data
+def plot_graph_race(df_data):
+    """
+    Create a League Title Race video using bar_chart_race.
+    """
+    #TODO - Customize the parameters for different league sizes
+    df_values, df_ranks = bcr.prepare_long_data(df_data, 
+                index='gameweek', 
+                columns='entry_name', 
+                values='points', 
+                steps_per_period=1)
+
+    return bcr.bar_chart_race(df_values,
+                n_bars=16, 
+                steps_per_period=30, 
+                period_length=1500, 
+                title = 'League Race', 
+                period_template='{x:.0f}', 
+                fixed_max=True, 
+                filter_column_colors=True).data
+
 
 def plot_total_points(df):
     fig = px.line(
@@ -84,6 +112,18 @@ def main():
             st.error("Please enter a valid league ID.")
         # Initialize LeagueHistoryLoader
         league_history_loader = LeagueHistoryLoader(int(league_id))
+
+        st.markdown("## Title Race")
+        
+        game_week_points = get_points_by_gameweek(league_history_loader.get_data())
+        html_str = plot_graph_race(game_week_points)
+
+        start = html_str.find('base64,')+len('base64,')
+        end = html_str.find('">')
+
+        video = base64.b64decode(html_str[start:end])
+        st.video(video)
+
         display_data(league_history_loader)
 
 
