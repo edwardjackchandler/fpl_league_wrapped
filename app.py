@@ -113,18 +113,19 @@ def main():
         # Initialize LeagueHistoryLoader
         league_history_loader = LeagueHistoryLoader(int(league_id))
 
-        st.markdown("## Title Race")
         
         game_week_points = get_points_by_gameweek(league_history_loader.get_data())
-        html_str = plot_graph_race(game_week_points)
+        display_data(league_history_loader)
 
+        st.markdown("## Title Race Video")
+        st.markdown("Video may take a minute to load.")
+        html_str = plot_graph_race(game_week_points)
         start = html_str.find('base64,')+len('base64,')
         end = html_str.find('">')
 
         video = base64.b64decode(html_str[start:end])
         st.video(video)
 
-        display_data(league_history_loader)
 
 
 def display_data(league_history_loader: LeagueHistoryLoader):
