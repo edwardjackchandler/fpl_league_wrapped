@@ -267,3 +267,86 @@ def get_player_worst_rank_event(duckdb_df):
         ORDER BY 
             wr.player_name
     """).to_df()
+
+def get_best_player_tally(duckdb_df):
+    """
+    This function looks at every game week, and calculates the best player tally. 
+    The best player is defined as the player who has the most points in that game week.
+    Players should only exist in this if they the number of times they are the best player is greater than 0.
+
+    Schema: player_name, entry_name, game_weeks_won
+    e.g.
+    | player_name | entry_name | game_weeks_won |
+    |-------------|------------|----------------|
+    | player1     | entry1     | 5              |
+    | player2     | entry2     | 3              |
+    """
+    return duckdb.query("""
+        WITH best_player AS (
+            SELECT 
+                event, 
+                player_name, 
+                entry_name, 
+                event_points,
+                RANK() OVER (PARTITION BY event ORDER BY event_points DESC) as rank
+            FROM 
+                duckdb_df
+        )
+        SELECT 
+            player_name, 
+            entry_name, 
+            COUNT(*) AS game_weeks_won
+        FROM 
+            best_player
+        WHERE 
+            rank = 1
+        GROUP BY 
+            player_name, 
+            entry_name
+        HAVING 
+            COUNT(*) > 0
+        ORDER BY 
+            game_weeks_won DESC
+    """).to_df()
+
+
+def get_worst_player_tally(duckdb_df):
+    """
+    This function looks at every game week, and calculates the worst player tally.
+    The worst player is defined as the player who has the least points in that game week.
+    Players should only exist in this if they the number of times they are the worst player is greater than 0.
+    
+    Schema: player_name, entry_name, game_weeks_lost
+    e.g.
+    | player_name | entry_name | game_weeks_lost |
+    |-------------|------------|-----------------|
+    | player1     | entry1     | 5               |
+    | player2     | entry2     | 3               |
+    """
+    return duckdb.query("""
+        WITH worst_player AS (
+            SELECT 
+                event, 
+                player_name, 
+                entry_name, 
+                event_points,
+                RANK() OVER (PARTITION BY event ORDER BY event_points ASC) as rank
+            FROM 
+                duckdb_df
+        )
+        SELECT 
+            player_name, 
+            entry_name, 
+            COUNT(*) AS Tickets
+        FROM 
+            worst_player
+        WHERE 
+            rank = 1
+        GROUP BY 
+            player_name, 
+            entry_name
+        HAVING 
+            COUNT(*) > 0
+        ORDER BY 
+            Tickets DESC
+    """).to_df()

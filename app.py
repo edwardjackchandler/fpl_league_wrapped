@@ -1,23 +1,23 @@
-import streamlit as st
+import base64
+
+import bar_chart_race as bcr
 import plotly.express as px
+import streamlit as st
+
 from src.fpl_load import LeagueHistoryLoader
 from src.questions import (
+    get_best_player_tally,
     get_biggest_difference,
-    get_most_points_left_on_bench_week,
-    get_total_points_left_on_bench,
-    get_points_by_gameweek,
     get_most_frequent_last_rank,
-    get_total_points_and_bench_points,
+    get_most_points_left_on_bench_week,
     get_player_best_rank_event,
-    get_player_worst_rank_event
+    get_player_worst_rank_event,
+    get_points_by_gameweek,
+    get_total_points_and_bench_points,
+    get_total_points_left_on_bench,
+    get_worst_player_tally,
 )
 
-import pandas as pd
-import numpy as np
-import plotly.express as px
-import streamlit as st
-import bar_chart_race as bcr
-import base64
 
 @st.cache_data
 def plot_graph_race(df_data):
@@ -39,7 +39,6 @@ def plot_graph_race(df_data):
                 period_template='{x:.0f}', 
                 fixed_max=True, 
                 filter_column_colors=True).data
-
 
 def plot_total_points(df):
     fig = px.line(
@@ -103,8 +102,8 @@ def plot_total_vs_bench_points(df):
 def main():
     st.title("FPL League Wrapped")
 
-    # st.markdown("Feed The Pig Championship League ID: 665568")
-    league_id = st.text_input("Enter league ID", "")
+    default_league_id = 741068
+    league_id = st.text_input("Enter league ID", value=default_league_id)
     load_button = st.button("Load Data")
 
     if load_button:
@@ -113,7 +112,6 @@ def main():
         # Initialize LeagueHistoryLoader
         league_history_loader = LeagueHistoryLoader(int(league_id))
 
-        
         game_week_points = get_points_by_gameweek(league_history_loader.get_data())
         display_data(league_history_loader)
 
@@ -134,6 +132,16 @@ def display_data(league_history_loader: LeagueHistoryLoader):
 
     # Display the max game week
     st.markdown(f"## Data Refreshed for GW {df['event'].max()}")
+
+    st.markdown("## Best and Worst Players by Gameweek")
+
+    st.markdown("### Tickets To The Bottom Feeder Raffle")
+    worst_players = get_worst_player_tally(df)
+    st.write(worst_players)
+
+    st.markdown("### Best Players by Gameweek")
+    best_players = get_best_player_tally(df)
+    st.write(best_players)
 
     st.markdown("## Points by Gameweek")
     st.markdown(
