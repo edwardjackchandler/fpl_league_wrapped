@@ -133,13 +133,13 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     # Display the max game week
     st.markdown(f"## Data Refreshed for GW {df['event'].max()}")
 
-    st.markdown("## Best and Worst Players by Gameweek")
+    st.markdown("## Best and Worst Players")
 
     st.markdown("### Tickets To The Bottom Feeder Raffle")
     worst_players = get_worst_player_tally(df)
     st.write(worst_players)
 
-    st.markdown("### Best Players by Gameweek")
+    st.markdown("### Gameweeks Won")
     best_players = get_best_player_tally(df)
     st.write(best_players)
 
