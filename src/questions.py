@@ -274,9 +274,9 @@ def get_best_player_tally(duckdb_df):
     The best player is defined as the player who has the most points in that game week.
     Players should only exist in this if they the number of times they are the best player is greater than 0.
 
-    Schema: player_name, entry_name, game_weeks_won
+    Schema: player_name, entry_name, won
     e.g.
-    | player_name | entry_name | game_weeks_won |
+    | player_name | entry_name | won |
     |-------------|------------|----------------|
     | player1     | entry1     | 5              |
     | player2     | entry2     | 3              |
@@ -295,7 +295,7 @@ def get_best_player_tally(duckdb_df):
         SELECT 
             player_name, 
             entry_name, 
-            COUNT(*) AS game_weeks_won
+            COUNT(*) AS won
         FROM 
             best_player
         WHERE 
@@ -306,7 +306,7 @@ def get_best_player_tally(duckdb_df):
         HAVING 
             COUNT(*) > 0
         ORDER BY 
-            game_weeks_won DESC
+            won DESC
     """).to_df()
 
 
