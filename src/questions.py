@@ -152,6 +152,7 @@ def get_total_points_and_bench_points(duckdb_df):
     """
     ).to_df()
 
+
 def get_player_best_rank_event(duckdb_df):
     """
     This function returns a DataFrame with the player_name, entry_name, best_rank, and the event on which that best_rank happened
@@ -209,6 +210,7 @@ def get_player_best_rank_event(duckdb_df):
         ORDER BY 
             br.entry_name
     """).to_df()
+
 
 def get_player_worst_rank_event(duckdb_df):
     """
@@ -268,18 +270,19 @@ def get_player_worst_rank_event(duckdb_df):
             wr.player_name
     """).to_df()
 
+
 def get_best_player_tally(duckdb_df):
     """
-    This function looks at every game week, and calculates the best player tally. 
+    This function looks at every game week, and calculates the best player tally.
     The best player is defined as the player who has the most points in that game week.
-    Players should only exist in this if they the number of times they are the best player is greater than 0.
+    Players should only exist in this if the number of times they are the best player is greater than 0.
 
-    Schema: player_name, entry_name, won
+    Schema: player_name, entry_name, game_weeks_won_total, game_weeks_won_list, game_weeks_won_dict
     e.g.
-    | player_name | entry_name | won |
-    |-------------|------------|----------------|
-    | player1     | entry1     | 5              |
-    | player2     | entry2     | 3              |
+    | player_name | entry_name | game_weeks_won_total | game_weeks_won_list | game_weeks_won_dict       |
+    |-------------|------------|----------------------|---------------------|---------------------------|
+    | player1     | entry1     | 5                    | 1, 3, 5, 7, 9       | {1: 10, 3: 15, 5: 20, ...}|
+    | player2     | entry2     | 3                    | 2, 4, 6             | {2: 12, 4: 18, 6: 22}     |
     """
     return duckdb.query("""
         WITH best_player AS (
@@ -295,7 +298,9 @@ def get_best_player_tally(duckdb_df):
         SELECT 
             player_name, 
             entry_name, 
-            COUNT(*) AS won
+            COUNT(*) AS game_weeks_won_total,
+            STRING_AGG(CAST(event AS VARCHAR), ', ' ORDER BY event) AS game_weeks_won_list,
+            MAP(LIST(event), LIST(event_points)) AS game_weeks_won_dict
         FROM 
             best_player
         WHERE 
@@ -306,7 +311,7 @@ def get_best_player_tally(duckdb_df):
         HAVING 
             COUNT(*) > 0
         ORDER BY 
-            won DESC
+            game_weeks_won_total DESC
     """).to_df()
 
 
@@ -314,14 +319,14 @@ def get_worst_player_tally(duckdb_df):
     """
     This function looks at every game week, and calculates the worst player tally.
     The worst player is defined as the player who has the least points in that game week.
-    Players should only exist in this if they the number of times they are the worst player is greater than 0.
-    
-    Schema: player_name, entry_name, game_weeks_lost
+    Players should only exist in this if the number of times they are the worst player is greater than 0.
+
+    Schema: player_name, entry_name, game_weeks_lost_total, game_weeks_lost_list, game_weeks_lost_dict
     e.g.
-    | player_name | entry_name | game_weeks_lost |
-    |-------------|------------|-----------------|
-    | player1     | entry1     | 5               |
-    | player2     | entry2     | 3               |
+    | player_name | entry_name | game_weeks_lost_total | game_weeks_lost_list | game_weeks_lost_dict       |
+    |-------------|------------|-----------------------|----------------------|----------------------------|
+    | player1     | entry1     | 5                     | 1, 3, 5, 7, 9        | {1: 2, 3: 1, 5: 3, ...}    |
+    | player2     | entry2     | 3                     | 2, 4, 6              | {2: 0, 4: 1, 6: 2}         |
     """
     return duckdb.query("""
         WITH worst_player AS (
@@ -337,7 +342,9 @@ def get_worst_player_tally(duckdb_df):
         SELECT 
             player_name, 
             entry_name, 
-            COUNT(*) AS Tickets
+            COUNT(*) AS game_weeks_lost_total,
+            STRING_AGG(CAST(event AS VARCHAR), ', ' ORDER BY event) AS game_weeks_lost_list,
+            MAP(LIST(event), LIST(event_points)) AS game_weeks_lost_dict
         FROM 
             worst_player
         WHERE 
@@ -348,5 +355,5 @@ def get_worst_player_tally(duckdb_df):
         HAVING 
             COUNT(*) > 0
         ORDER BY 
-            Tickets DESC
+            game_weeks_lost_total DESC
     """).to_df()
