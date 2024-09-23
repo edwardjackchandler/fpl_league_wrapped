@@ -47,7 +47,6 @@ class FPLDataLoader:
 
 
 class StandingsLoader(FPLDataLoader):
-
     standings_schema_mapping = {
         "id": "id",
         "event_total": "event_total",
@@ -75,7 +74,6 @@ class StandingsLoader(FPLDataLoader):
 
 
 class HistoryLoader(FPLDataLoader):
-
     history_schema_mapping = {
         "event": "event",
         "points": "event_points",

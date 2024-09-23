@@ -290,8 +290,8 @@ def get_best_player_tally(duckdb_df):
                 event, 
                 player_name, 
                 entry_name, 
-                event_points,
-                RANK() OVER (PARTITION BY event ORDER BY event_points DESC) as rank
+                event_points - event_transfers_cost AS net_points,
+                RANK() OVER (PARTITION BY event ORDER BY net_points DESC) as rank
             FROM 
                 duckdb_df
         )
@@ -300,7 +300,7 @@ def get_best_player_tally(duckdb_df):
             entry_name, 
             COUNT(*) AS game_weeks_won_total,
             STRING_AGG(CAST(event AS VARCHAR), ', ' ORDER BY event) AS game_weeks_won_list,
-            MAP(LIST(event), LIST(event_points)) AS game_weeks_won_dict
+            MAP(LIST(event), LIST(net_points)) AS game_weeks_won_dict
         FROM 
             best_player
         WHERE 
@@ -334,8 +334,8 @@ def get_worst_player_tally(duckdb_df):
                 event, 
                 player_name, 
                 entry_name, 
-                event_points,
-                RANK() OVER (PARTITION BY event ORDER BY event_points ASC) as rank
+                event_points - event_transfers_cost AS net_points,
+                RANK() OVER (PARTITION BY event ORDER BY net_points ASC) as rank
             FROM 
                 duckdb_df
         )
@@ -344,7 +344,7 @@ def get_worst_player_tally(duckdb_df):
             entry_name, 
             COUNT(*) AS game_weeks_lost_total,
             STRING_AGG(CAST(event AS VARCHAR), ', ' ORDER BY event) AS game_weeks_lost_list,
-            MAP(LIST(event), LIST(event_points)) AS game_weeks_lost_dict
+            MAP(LIST(event), LIST(net_points)) AS game_weeks_lost_dict
         FROM 
             worst_player
         WHERE 
@@ -356,4 +356,24 @@ def get_worst_player_tally(duckdb_df):
             COUNT(*) > 0
         ORDER BY 
             game_weeks_lost_total DESC
+    """).to_df()
+
+
+def get_transfer_hits(duckdb_df):
+    """
+    This function returns a DataFrame for each game week showing which
+    players have had event_transfer_costs greater than 0.
+    """
+    return duckdb.query("""
+        SELECT 
+            event, 
+            player_name, 
+            entry_name, 
+            event_transfers_cost
+        FROM 
+            duckdb_df
+        WHERE
+            event_transfers_cost > 0
+        ORDER BY
+            event
     """).to_df()

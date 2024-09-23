@@ -16,6 +16,7 @@ from src.questions import (
     get_total_points_and_bench_points,
     get_total_points_left_on_bench,
     get_worst_player_tally,
+    get_transfer_hits
 )
 
 
@@ -142,6 +143,13 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     st.markdown("### Gameweeks Won")
     best_players = get_best_player_tally(df)
     st.write(best_players)
+
+    st.markdown("## Transfer Hits")
+    st.markdown(
+        "This section displays the total transfer hits taken by each player."
+    )
+    transfer_hits_df = get_transfer_hits(df)
+    st.write(transfer_hits_df)
 
     st.markdown("## Points by Gameweek")
     st.markdown(
