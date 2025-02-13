@@ -8,15 +8,15 @@ from src.fpl_load import LeagueHistoryLoader
 from src.questions import (
     get_best_player_tally,
     get_biggest_difference,
-    get_most_frequent_last_rank,
+    get_boring,
     get_most_points_left_on_bench_week,
     get_player_best_rank_event,
     get_player_worst_rank_event,
     get_points_by_gameweek,
     get_total_points_and_bench_points,
     get_total_points_left_on_bench,
+    get_transfer_hits,
     get_worst_player_tally,
-    get_transfer_hits
 )
 
 
@@ -143,6 +143,12 @@ def display_data(league_history_loader: LeagueHistoryLoader):
     st.markdown("### Gameweeks Won")
     best_players = get_best_player_tally(df)
     st.write(best_players)
+
+    st.markdown("### BORING")
+    st.markdown("![Alt Text](https://media1.tenor.com/m/513CjqCC3_sAAAAd/boring-nigel-farage.gif)")
+
+    boring_players = get_boring(df)
+    st.write(boring_players)
 
     st.markdown("## Transfer Hits")
     st.markdown(

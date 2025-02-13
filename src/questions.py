@@ -1,7 +1,6 @@
 import duckdb
 
 # Import typing for dictionary
-from typing import Dict
 
 
 def get_total_points_left_on_bench(duckdb_df):
@@ -376,4 +375,85 @@ def get_transfer_hits(duckdb_df):
             event_transfers_cost > 0
         ORDER BY
             event
+    """).to_df()
+
+
+def get_boring(duckdb_df):
+    """
+    Get the players that haven't ever had best or worst rank in a single gameweek.
+    If player X has never been the best AND never been the worst in a single gameweek,
+    they should be included in the result.
+    """
+    return duckdb.query("""
+        WITH best_player AS (
+            SELECT 
+                event, 
+                player_name, 
+                entry_name, 
+                event_points - event_transfers_cost AS net_points,
+                RANK() OVER (PARTITION BY event ORDER BY net_points DESC) AS rank
+            FROM 
+                duckdb_df
+        ),
+        worst_player AS (
+            SELECT 
+                event, 
+                player_name, 
+                entry_name, 
+                event_points - event_transfers_cost AS net_points,
+                RANK() OVER (PARTITION BY event ORDER BY net_points ASC) AS rank
+            FROM 
+                duckdb_df
+        )
+        SELECT 
+            DISTINCT
+                all_players.player_name, 
+                all_players.entry_name
+        FROM 
+            (
+                SELECT 
+                    player_name, 
+                    entry_name, 
+                    COUNT(*) AS game_weeks_won_total
+                FROM 
+                    best_player
+                WHERE 
+                    rank = 1
+                GROUP BY 
+                    player_name, 
+                    entry_name
+            ) AS best
+        FULL OUTER JOIN 
+            (
+                SELECT 
+                    player_name, 
+                    entry_name, 
+                    COUNT(*) AS game_weeks_lost_total
+                FROM 
+                    worst_player
+                WHERE 
+                    rank = 1
+                GROUP BY 
+                    player_name, 
+                    entry_name
+            ) AS worst
+        ON 
+            best.player_name = worst.player_name AND 
+            best.entry_name = worst.entry_name
+        FULL OUTER JOIN 
+            (
+                SELECT 
+                    player_name, 
+                    entry_name
+                FROM 
+                    duckdb_df
+            ) AS all_players
+        ON 
+            best.player_name = all_players.player_name AND 
+            best.entry_name = all_players.entry_name OR
+            worst.player_name = all_players.player_name AND 
+            worst.entry_name = all_players.entry_name
+        WHERE 
+            best.game_weeks_won_total IS NULL AND 
+            worst.game_weeks_lost_total IS NULL
     """).to_df()
